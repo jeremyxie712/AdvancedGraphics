@@ -46,6 +46,7 @@ def index_of_refraction(n,k):
 
 
 def fresnel_function(eta_i,eta_t,theta_i):
+    fresnel = []
     theta_t = math.asin((eta_i/eta_t)*math.sin(theta_i))
     
     p_polarised_reflectance = ((eta_t*math.cos(theta_i)-eta_i*math.cos(theta_t))/(eta_t*math.cos(theta_i)+eta_i*math.cos(theta_t))) ** 2
@@ -53,6 +54,7 @@ def fresnel_function(eta_i,eta_t,theta_i):
 
     Fr = (0.5) * (p_polarised_reflectance + s_polarised_reflectance)
     Tr = 1 - Fr
+
     return p_polarised_reflectance,s_polarised_reflectance,Fr,Tr
 
 def main(eta_i,eta_t):
@@ -72,7 +74,9 @@ def main(eta_i,eta_t):
     transmittance=np.zeros(100)
     sch_approx  = np.zeros(100)
 
-    r_0 = fresnel_function(eta_i,eta_t,0)[2]
+    p,s,r_0,t = fresnel_function(eta_i,eta_t,0)
+    
+
     i = 0
     while i < 100:
         theta = math.radians(deg_points[i])
