@@ -41,7 +41,7 @@ def writePFM(fileName, im):
         tmp = im
         im = np.empty(shape=(h,w,3), dtype=np.float32)
         im[:,:,0] = im[:,:,1] = im[:,:,2] = tmp
-        print im.shape
+        print(im.shape)
     height,width,nComponents = im.shape
     data_ptr = np.ctypeslib.as_ctypes(np.float32(im))
     libPNM.writePFM(fileName, width, height, nComponents, data_ptr)
