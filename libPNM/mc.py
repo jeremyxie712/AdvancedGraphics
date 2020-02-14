@@ -31,7 +31,7 @@ def main(sample_num,flag,gamma):
 
     F = img.copy()
 
-    intensity = np.sum(img,axis=2) ##Averaging the luminance
+    intensity = np.sum(img,axis=2) ##Averaging the luminance I=(R+G+B)/3
     intensity = intensity / 3
 
     for h in range(height):
