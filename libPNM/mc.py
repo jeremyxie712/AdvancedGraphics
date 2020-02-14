@@ -83,7 +83,7 @@ def main(sample_num,flag,gamma):
                       [idx_row-2, idx_col+2], [idx_row-1, idx_col+2], [idx_row, idx_col+2], [idx_row+1, idx_col+2],
                       [idx_row-1, idx_col-2], [idx_row, idx_col-2], [idx_row+1, idx_col-2], [idx_row+2, idx_col-2],
                       [idx_row, idx_col]]:
-                      if -1 < window[0] < 512 and -1 < window[1] < 1024:
+                      if 0 <= window[0] < 512 and 0 <= window[1] < 1024:
                           if flag == True:
                               sampler[window[0]][window[1]] = img[idx_row][idx_col]
                           F[window[0]][window[1]] = [0,0,10]
