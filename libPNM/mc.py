@@ -19,7 +19,7 @@ def tone_map(F, stops, gamma):
 	return x
 
 
-def main(sample_num,flag=True):
+def main(sample_num,flag,gamma):
     filename = '../GraceCathedral/grace_latlong.pfm'
     img = loadPFM(filename)
 
@@ -89,10 +89,10 @@ def main(sample_num,flag=True):
                           F[window[0]][window[1]] = [0,0,10]
 
 
-    for h in range(height):
+    for h in range(height): ##Scaling and Gamma correction 
         for w in range(width):
             for c in range(channel):
-                F[h,w,c] = ((F[h,w,c]/255) ** (1./1.5)*255)
+                F[h,w,c] = ((F[h,w,c]/255) ** (1./gamma)*255)
                 for s in range(6):
                     F[h,w,c] = F[h,w,c]*2
                 if F[h,w,c] > 255:
@@ -106,16 +106,15 @@ def main(sample_num,flag=True):
         for h in range(height):
             for w in range(width):
                 for c in range(channel):
-                    sampler[h,w,c] = ((sampler[h,w,c]/255) ** (1./1.5)*255)
+                    sampler[h,w,c] = ((sampler[h,w,c]/255) ** (1./gamma)*255)
                     for s in range(6):
                         sampler[h,w,c] = sampler[h,w,c]*2
                     if sampler[h,w,c] > 255:
                         sampler[h,w,c] = 255
                     elif sampler[h,w,c] < 0:
                         sampler[h,w,c] = 0
-
-    writePPM('../Sampler_{}.ppm'.format(sample_num),sampler.astype(np.uint8))
-
+        writePPM('../Sampler_{}.ppm'.format(sample_num),sampler.astype(np.uint8))
 
 
-main(1024,flag=True)
+
+main(64,True,1.5)
