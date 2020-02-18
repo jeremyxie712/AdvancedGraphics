@@ -11,12 +11,13 @@ def w_function(x):
 def tone_map(F, stops, gamma):
 	# x should be an hsv image
 	# scales with exposure
-	x = F.copy()
-	x[:,:,2] *= 2**stops
+    x = F.copy()
+    x *= 2**stops
 	# Clip
-	x[x[:,:,2] > 1, 2] = 1
-	x[:,:,2] **= (1/gamma)
-	return x
+    x[x > 1] = 1
+    x **= (1/gamma)
+    x *= 255
+    return x
 
 
 def main(sample_num,flag,gamma):
@@ -76,8 +77,8 @@ def main(sample_num,flag,gamma):
                 for w in range(width):
                     if cdf_2d[idx_row][w] >= sampling_distribution_col:
                         idx_col = w
-                        break
-                break
+                        break;
+                break;
         for window in [[idx_row-2, idx_col-2], [idx_row-2, idx_col-1], [idx_row-2, idx_col], [idx_row-2, idx_col+1],
                       [idx_row+2, idx_col-1], [idx_row+2, idx_col], [idx_row+2, idx_col+1], [idx_row+2, idx_col+2],
                       [idx_row-2, idx_col+2], [idx_row-1, idx_col+2], [idx_row, idx_col+2], [idx_row+1, idx_col+2],
@@ -87,34 +88,14 @@ def main(sample_num,flag,gamma):
                           if flag == True:
                               sampler[window[0]][window[1]] = img[idx_row][idx_col]
                           F[window[0]][window[1]] = [0,0,10]
-
-
-    for h in range(height): ##Scaling and Gamma correction 
-        for w in range(width):
-            for c in range(channel):
-                F[h,w,c] = ((F[h,w,c]/255) ** (1./gamma)*255)
-                for s in range(6):
-                    F[h,w,c] = F[h,w,c]*2
-                if F[h,w,c] > 255:
-                    F[h,w,c] = 255
-                elif F[h,w,c] < 0:
-                    F[h,w,c] = 0
+    F = tone_map(F,stops=2,gamma=gamma) #exponential scaling and gamma correction
 
     writePPM('../Sample_Num: {}.ppm'.format(sample_num),F.astype(np.uint8))
 
     if sample_num == 256:
-        for h in range(height):
-            for w in range(width):
-                for c in range(channel):
-                    sampler[h,w,c] = ((sampler[h,w,c]/255) ** (1./gamma)*255)
-                    for s in range(6):
-                        sampler[h,w,c] = sampler[h,w,c]*2
-                    if sampler[h,w,c] > 255:
-                        sampler[h,w,c] = 255
-                    elif sampler[h,w,c] < 0:
-                        sampler[h,w,c] = 0
+        sampler = tone_map(sampler,stops=2,gamma=gamma)
         writePPM('../Sampler_{}.ppm'.format(sample_num),sampler.astype(np.uint8))
 
 
 
-main(64,True,1.5)
+main(256,True,1.5)
