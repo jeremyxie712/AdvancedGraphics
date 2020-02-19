@@ -19,7 +19,7 @@ def tone_map(F, stops, gamma):
     x *= 255
     return x
 
-
+    
 def main(sample_num,flag,gamma):
     filename = '../GraceCathedral/grace_latlong.pfm'
     img = loadPFM(filename)
@@ -35,13 +35,6 @@ def main(sample_num,flag,gamma):
     intensity = np.sum(img,axis=2) ##Averaging the luminance I=(R+G+B)/3
     intensity = intensity / 3
 
-    # for h in range(height):
-    #     for w in range(width):
-    #         for c in range(channel):
-    #             if F[h][w][c] < 0:
-    #                 F[h][w][c] = 0
-    #             elif F[h][w][c] > 255:
-    #                 F[h][w][c] = 255
     F[F > 255] = 255 
     F[F < 0]   = 0
     for h in range(height):
@@ -68,21 +61,22 @@ def main(sample_num,flag,gamma):
     ################
     sampler = np.zeros((height,width,channel))
     for i in range(sample_num):
-        idx_row = -1
-        idx_col = -1
+        idx_row = [[] for i in range(height)]
+        idx_col = [[] for j in range(width)]
 
         # mu = np.mean(intensity)
 
         sampling_distribution_row = np.random.uniform(0,1)
+        sampling_distribution_col = np.random.uniform(0,1)
         for h in range(height):
             if cdf_1d[h] >= sampling_distribution_row:
                 idx_row = h
-                sampling_distribution_col = np.random.uniform(0,1)
                 for w in range(width):
                     if cdf_2d[idx_row][w] >= sampling_distribution_col:
                         idx_col = w
                         break;
                 break;
+
         for window in [[idx_row-2, idx_col-2], [idx_row-2, idx_col-1], [idx_row-2, idx_col], [idx_row-2, idx_col+1],
                       [idx_row+2, idx_col-1], [idx_row+2, idx_col], [idx_row+2, idx_col+1], [idx_row+2, idx_col+2],
                       [idx_row-2, idx_col+2], [idx_row-1, idx_col+2], [idx_row, idx_col+2], [idx_row+1, idx_col+2],
@@ -92,6 +86,10 @@ def main(sample_num,flag,gamma):
                           if flag == True:
                               sampler[window[0]][window[1]] = img[idx_row][idx_col]
                           F[window[0]][window[1]] = [0,0,10]
+        # if 0 <= idx_row <= 512 and 0 <= idx_col <= 512:
+        #     F[idx_row:idx_row+5][idx_col:idx_col+5] = [0.,0.,80.]
+        # if flag == True:
+        #     sampler[idx_row:idx_row+5][idx_col:idx_col+5] = img[idx_row][idx_col]
     F = tone_map(F,stops=2,gamma=gamma) #exponential scaling and gamma correction
 
     writePPM('../Sample_Num: {}.ppm'.format(sample_num),F.astype(np.uint8))
