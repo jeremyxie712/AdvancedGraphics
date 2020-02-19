@@ -35,13 +35,17 @@ def main(sample_num,flag,gamma):
     intensity = np.sum(img,axis=2) ##Averaging the luminance I=(R+G+B)/3
     intensity = intensity / 3
 
+    # for h in range(height):
+    #     for w in range(width):
+    #         for c in range(channel):
+    #             if F[h][w][c] < 0:
+    #                 F[h][w][c] = 0
+    #             elif F[h][w][c] > 255:
+    #                 F[h][w][c] = 255
+    F[F > 255] = 255 
+    F[F < 0]   = 0
     for h in range(height):
         for w in range(width):
-            for c in range(channel):
-                if F[h][w][c] < 0:
-                    F[h][w][c] = 0
-                elif F[h][w][c] > 255:
-                    F[h][w][c] = 255
             intensity[h][w] = intensity[h][w] * math.sin((h / (height - 1.)) * np.pi)
     #######################
     print(intensity.shape) ##Checking the dimensions, should be (512,1024)
