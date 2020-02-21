@@ -56,9 +56,11 @@ def main(eta_i,eta_t):
         bound = 90
         brewster = math.degrees(math.atan(eta_t/eta_i))
         deg_points  = np.linspace(0,bound,100)
+        print('Brewster: ', brewster)
         plt.vlines(brewster, 0., 1., colors='y', linestyles="dashed",label='Brewster Angle')
     else:
         critical = math.degrees(math.asin(eta_t/eta_i))
+        print('Critical: ',critical)
         deg_points  = np.linspace(0,critical,100)
         plt.vlines(critical, 0., 1., colors='m', linestyles="dashed",label='Critical Angle')
     p_polarised = np.zeros(100)
@@ -91,4 +93,4 @@ def main(eta_i,eta_t):
     plt.show()
 
 
-main(1.00,1.45)
+main(1.45,1.00)

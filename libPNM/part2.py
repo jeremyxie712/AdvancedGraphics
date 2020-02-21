@@ -8,6 +8,14 @@ from PNM import *
 def w_function(x):
 	return 16*x**2*(1-x)**2
 
+def GetBoundingBox(centroid, max_x, max_y, size = 9):
+	# This function returns the bounding box with the given size of a centroid
+	top_y = max(0, centroid[1]-(size-1)//2)
+	bottom_y = min(max_y-1, centroid[1]+(size-1)//2)
+	leftmost_x = max(0, centroid[0]-(size-1)//2)
+	rightmost_x = min(max_x-1, centroid[0]+(size-1)//2)
+	return top_y, bottom_y, leftmost_x, rightmost_x
+
 def tone_map(F, stops, gamma):
 	# x should be an hsv image
 	# scales with exposure
@@ -44,7 +52,7 @@ def main(sample_num,flag,gamma):
     print(intensity.shape) ##Checking the dimensions, should be (512,1024)
     #######################
 
-    cdf_1d = np.sum(intensity,axis=1) / np.sum(intensity)
+    cdf_1d = np.sum(intensity,axis=1) / np.sum(intensity) 
     cdf_2d = np.zeros((height,width))  ##(512,1024)
 
     for idx_height in range(1,height):
@@ -86,10 +94,8 @@ def main(sample_num,flag,gamma):
                           if flag == True:
                               sampler[window[0]][window[1]] = img[idx_row][idx_col]
                           F[window[0]][window[1]] = [0,0,10]
-        # if 0 <= idx_row <= 512 and 0 <= idx_col <= 512:
-        #     F[idx_row:idx_row+5][idx_col:idx_col+5] = [0.,0.,80.]
-        # if flag == True:
-        #     sampler[idx_row:idx_row+5][idx_col:idx_col+5] = img[idx_row][idx_col]
+
+
     F = tone_map(F,stops=2,gamma=gamma) #exponential scaling and gamma correction
 
     writePPM('../Sample_Num: {}.ppm'.format(sample_num),F.astype(np.uint8))
